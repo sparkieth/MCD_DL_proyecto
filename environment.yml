@@ -1,0 +1,12 @@
+name: DL_protecto
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - scikit-learn
+  - pandas
+  - numpy==1.19.5
+  - pytest
+  - web3
+  
