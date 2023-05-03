@@ -24,8 +24,8 @@ def get_lenghts(example):
     return example
 
 #function for removing columns
-def removal_explode_map(df1,cols_to_remove,LABELS):
+def explode_map(df1,LABELS):
     df1=pd.DataFrame(df1)
-    return df1.drop(columns=cols_to_remove).explode('slither').map(LABELS)
+    return df1['address','slither'].explode('slither').map(LABELS)
 
     
