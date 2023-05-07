@@ -1,31 +1,49 @@
 import math
 import os
 from PIL import Image
+import numpy as np
+import pandas as pd
+import re
+import seaborn as sns
+import sys
+sys.path.append('MCD_DL_proyecto2')
+import funciones
+import re
 
-#función para xxx
-def remove_comments(string):
-    pattern = r"(\".*?\"|\'.*?\')|(/\*.*?\*/|//[^\r\n]*$)"
-    # first group captures quoted strings (double or single)
-    # second group captures comments (//single-line or /* multi-line */)
-    regex = re.compile(pattern, re.MULTILINE|re.DOTALL)
-    def _replacer(match):
-        # if the 2nd group is not None, then we have captured a real comment string.
-        if match.group(2) is not None:
-            return "" 
-        else: # otherwise, we will return the 1st group
-            return match.group(1) 
-    return regex.sub(_replacer, string)
 
-#función para xxxxx
-def get_lenghts(example):
-    code = remove_comments(example['source_code'])
-    example['sourcecode_len'] = len(code.split())
-    example['bytecode_len'] = len(HexBytes(example['bytecode']))
-    return example
+def decontracted(phrase):
+  phrase = re.sub(r"won't", "will not", phrase)
+  phrase = re.sub(r"can\'t", "can not", phrase)
+  phrase = re.sub(r"n\'t", " not", phrase)
+  phrase = re.sub(r"\'re", " are", phrase)
+  phrase = re.sub(r"\'s", " is", phrase)
+  phrase = re.sub(r"\'d", " would", phrase)
+  phrase = re.sub(r"\'ll", " will", phrase)
+  phrase = re.sub(r"\'t", " not", phrase)
+  phrase = re.sub(r"\'ve", " have", phrase)
+  phrase = re.sub(r"\'m", " am", phrase)
+  return phrase
 
-#function for removing columns
-def explode_map(df1,LABELS):
-    df1=pd.DataFrame(df1)
-    return df1['address','slither'].explode('slither').map(LABELS)
+  SYNS = []
+  for sentance in dataframe:
+    sentance = re.sub(r"http\S+", "", sentance)
+    sentance = decontracted(sentance)
+    sentance = re.sub("\S*\d\S*", "", sentance).strip()
+    sentance = re.sub('[^A-Za-z]+', ' ', sentance)
+    sentance = ' '.join(e.lower() for e in sentance.split() if e.lower() not in stopwords)
+    sentance = ' '.join(e.lower() for e in sentance.split() if e.lower() not in STOPWORDS)
+    SYNS.append(sentance.strip())
+  return SYNS
+
+# Cleaning
+TAG_RE = re.compile(r"(\".*?\"|\'.*?\')|(/\*.*?\*/|//[^\r\n]*$)")
+def preprocess_text(sen):
+  """
+  """
+  sentence = TAG_RE.sub('', sen) # html tags
+  sentence = re.sub('[^a-zA-Z]', ' ', sentence) # punctuations and numbers
+  sentence = re.sub(r"\s+[a-zA-Z]\s+", ' ', sentence) # single character
+  sentence = re.sub(r'\s+', ' ', sentence) # multiple spaces
+  return sentence
 
     
