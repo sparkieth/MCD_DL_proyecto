@@ -1,0 +1,70 @@
+---
+title: "Clasificación de texto con redes neuronales"
+subtitle: "Contratos inteligentes de "
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
+  slidy_presentation: default
+date: "2023-05-10"
+---
+## Qué son los contratos inteligentes
+
+Un contrato inteligente es un programa que corre en el blockchain de Ethereum. Es una colección de código (conjunto de funciones) y datos (sus estados) que reside en una dirección específica del blockchain de Ethereum.
+
+Estos contratos son a su vez un tipo de cuenta dentro de Ethereum. 
+
+Son automáticos, no son controlados por usuarios, son lanzados a la red y corren como fueron programados. Pueden definir reglas y un usuario puede interactuar con ellos.
+
+Minimiza factor humano y crea registros públicos.
+
+-----
+
+## Modelo de clasificación de texto
+
+Este trabajo se concentró en entrenar dos tipos de modelos para clasificar una lista de contratos inteligentes verificados por Etherscan.io.
+
+Se concentró en una clasificación binaria (la lista original tenía cinco tipos de contratos -multilabel).
+
+Se proponen dos modelos de procesamiento de lenguaje natural: KNN y LSTM. Se evaluó cada modelo basado en precisión binaria.
+
+Bases de datos desbalanceadas en favor de contratos no seguros, se rebalancearon tal que muestra quedara 50%-50%
+
+Bases de datos original: 1) entrenamiento, 79,641 contratos; 2) validación, 5,422 contratos.
+
+Preprocesamiento: remoción de símbolos, ids de palabras, vectores de representación
+
+Se consideraron dos tipos de bases: 
+
+- source_code: una versión simplificada del *codebase* del smart contract en Solidity (lo que se ejecuta cuando los usuarios interactúan con el contrato)
+- bytecode: texto que representa el *bytecode* del contrato (clasificación de sourcecode cuando está intencionalmente guardado)
+
+----
+
+## Características de modelos de procesamiento de texto
+
+- _RNN:_ 10 épocas, 1,923,137 parámetros
+        * procesamiento de texto (128 tokens) + embedding (64) + dropout 0.1 + capa RNN (32) + dropout 0.1 + sigmoide (1)
+- _LSTM:_ 10 épocas, 1,932,449 parámetros
+        * procesamiento de texto (128 tokens) + embedding (64) + lstm (32) +clasificador (1)
+
+-----
+## Resultados
+
+|      |train_loss |train_accuracy|val_loss|val_accuracy|database  |
+|------|-----------|--------------|--------|------------|----------|
+|RNN   | 0.3369    |0.8454        |0.4897  |0.7790      |sourcecode|
+|RNN   | 0.6936    |0.4975        |0.6940  |0.5000      |bytecode  |
+|LSTM  |0.2989     |0.8598        |||sourcecode|
+|LSTM  |0.6932     |0.5008        |||bytecode|
+
+[Resultados source_code por época](sandbox_Python/AP_MCD/MCD_DL_proyecto2/drafts/epochs_sourcecode.png)
+[Resultados bytecode por época](sandbox_Python/AP_MCD/MCD_DL_proyecto2/drafts/epochs_byte
+code.png)
+---
+## Conclusiones
+
+- la base de sourcecode tardaba más tiempo en compilar que bytecode, pero tenía más información
+- modelos con base de datos sourcecode se desempeñaban mejor, overfitting en bytecode (loss en sourcecode?)
+- bytecode: hash de sourcecode
+
+
